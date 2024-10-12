@@ -32,7 +32,7 @@ function addColumn() {
     deleteButton.onclick = function () {
         deleteColumn(colIndex); // Delete the column
     };
-    newHeader.appendChild(deleteButton);
+    newHeader.appendChild(deleteButton); // Append the delete button to the header
 
     // Add click event listener to the new header to generate graph for this column
     newHeader.addEventListener('click', function () {
