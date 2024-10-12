@@ -9,7 +9,6 @@ window.onload = function() {
 function addColumn() {
     const table = document.getElementById('dataTable');
     const headerRow = table.querySelector('thead tr');
-    const select = document.getElementById('dataColumnSelect');
 
     // Prompt for column header information
     const location = prompt('Enter the location:');
@@ -23,15 +22,15 @@ function addColumn() {
 
     // Add the new column header
     const newHeader = document.createElement('th');
-    const colIndex = headerRow.children.length;
+    const colIndex = headerRow.children.length; // Track column index
     newHeader.textContent = `${location} - ${date} - ${time}`;
-    headerRow.appendChild(newHeader);
+    
+    // Add click event listener to the new header to generate graph for this column
+    newHeader.addEventListener('click', function () {
+        generateGraphFromColumn(colIndex);
+    });
 
-    // Add this new column to the dropdown for selection
-    const newOption = document.createElement('option');
-    newOption.value = colIndex;
-    newOption.textContent = `${location} - ${date} - ${time}`;
-    select.appendChild(newOption);
+    headerRow.appendChild(newHeader);
 
     // Add empty input cells for each wavelength row
     const rows = table.querySelectorAll('tbody tr');
@@ -40,10 +39,7 @@ function addColumn() {
         const input = document.createElement('input');
         input.type = 'number';
         input.placeholder = 'Enter intensity';
-        input.addEventListener('input', () => {
-            saveTableToStorage();
-            updateHistogram(); // Update histogram after data input
-        });
+        input.addEventListener('input', saveTableToStorage);
         newCell.appendChild(input);
         row.appendChild(newCell);
     });
@@ -81,7 +77,6 @@ function saveTableToStorage() {
 // Function to load the table data from local storage
 function loadTableFromStorage() {
     const storedData = localStorage.getItem('lightData');
-    const select = document.getElementById('dataColumnSelect');
     if (storedData) {
         const tableData = JSON.parse(storedData);
 
@@ -93,13 +88,11 @@ function loadTableFromStorage() {
         headers.slice(1).forEach((header, colIndex) => {
             const newHeader = document.createElement('th');
             newHeader.textContent = header;
+            // Add click event listener for each loaded column header
+            newHeader.addEventListener('click', function () {
+                generateGraphFromColumn(colIndex + 1);
+            });
             headerRow.appendChild(newHeader);
-
-            // Add each header to the dropdown
-            const newOption = document.createElement('option');
-            newOption.value = colIndex + 1;
-            newOption.textContent = header;
-            select.appendChild(newOption);
         });
 
         // Load table data
@@ -110,156 +103,16 @@ function loadTableFromStorage() {
                 const input = document.createElement('input');
                 input.type = 'number';
                 input.value = cellData;
-                input.addEventListener('input', () => {
-                    saveTableToStorage();
-                    updateHistogram(); // Update histogram after data input
-                });
+                input.addEventListener('input', saveTableToStorage);
                 newCell.appendChild(input);
                 row.appendChild(newCell);
             });
         });
-
-        updateHistogram(); // Update histogram after loading data
     }
 }
 
-// Function to download the table as a CSV file
-function downloadCSV() {
-    const table = document.getElementById('dataTable');
-    let csvContent = "data:text/csv;charset=utf-8,";
-
-    // Collect headers
-    const headers = [];
-    table.querySelectorAll('thead th').forEach(header => {
-        headers.push(header.textContent);
-    });
-    csvContent += headers.join(",") + "\n";
-
-    // Collect data rows
-    const rows = table.querySelectorAll('tbody tr');
-    rows.forEach(row => {
-        const rowData = [];
-        row.querySelectorAll('td').forEach(cell => {
-            const input = cell.querySelector('input');
-            rowData.push(input ? input.value : cell.textContent);
-        });
-        csvContent += rowData.join(",") + "\n";
-    });
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "light_data.csv");
-    document.body.appendChild(link);
-
-    link.click();
-    document.body.removeChild(link);
-}
-
-
-function updateHistogram() {
-    const table = document.getElementById('dataTable');
-    const allIntensities = [];
-    const colors = [
-        'rgba(0, 0, 255, 0.6)',  // Blue (415 nm)
-        'rgba(0, 128, 255, 0.6)',  // Light Blue (445 nm)
-        'rgba(0, 255, 255, 0.6)',  // Cyan (480 nm)
-        'rgba(0, 255, 128, 0.6)',  // Green (515 nm)
-        'rgba(255, 255, 0, 0.6)',  // Yellow (555 nm)
-        'rgba(255, 165, 0, 0.6)',  // Orange (590 nm)
-        'rgba(255, 69, 0, 0.6)',   // Red-Orange (630 nm)
-        'rgba(255, 0, 0, 0.6)'     // Red (680 nm)
-    ];
-
-    // Collect all intensities from the table
-    const rows = table.querySelectorAll('tbody tr');
-    rows.forEach(row => {
-        row.querySelectorAll('td input').forEach(input => {
-            if (input.value) {
-                allIntensities.push(Number(input.value));
-            }
-        });
-    });
-
-    const ctx = document.getElementById('histogramChart').getContext('2d');
-
-    // Only destroy the chart if it has been initialized
-    if (window.histogramChart instanceof Chart) {
-        window.histogramChart.destroy();
-    }
-
-    window.histogramChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: wavelengths,
-            datasets: [{
-                label: 'Intensity Distribution by Wavelength',
-                data: allIntensities,
-                backgroundColor: colors,
-                borderColor: colors.map(c => c.replace('0.6', '1')),
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Wavelength (nm)',
-                        font: {
-                            size: 18
-                        }
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Intensity',
-                        font: {
-                            size: 18
-                        }
-                    },
-                    beginAtZero: true
-                }
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        font: {
-                            size: 16
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function generateGraph() {
-    const select = document.getElementById('dataColumnSelect');
-    const colIndex = select.value;
-
-    // Ensure a column is selected
-    if (colIndex === "") {
-        alert("Please select a column to generate the graph.");
-        return;
-    }
-
+// Function to generate the graph for the selected column
+function generateGraphFromColumn(colIndex) {
     const table = document.getElementById('dataTable');
     const intensityValues = [];
     const rows = table.querySelectorAll('tbody tr');
@@ -348,13 +201,3 @@ function generateGraph() {
         }
     });
 }
-
-
-
-
-
-
-
-
-
-
