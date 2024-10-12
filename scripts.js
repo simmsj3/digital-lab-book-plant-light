@@ -7,8 +7,6 @@ window.onload = function() {
 
 // Function to add a new column for student input
 function addColumn() {
-    console.log("Add Data Column button clicked");
-
     const table = document.getElementById('dataTable');
     const headerRow = table.querySelector('thead tr');
     const select = document.getElementById('dataColumnSelect');
@@ -25,7 +23,7 @@ function addColumn() {
 
     // Add the new column header
     const newHeader = document.createElement('th');
-    const colIndex = headerRow.children.length; // Track column index
+    const colIndex = headerRow.children.length;
     newHeader.textContent = `${location} - ${date} - ${time}`;
     headerRow.appendChild(newHeader);
 
@@ -43,15 +41,14 @@ function addColumn() {
         input.type = 'number';
         input.placeholder = 'Enter intensity';
         input.addEventListener('input', () => {
-            saveTableToStorage(); 
+            saveTableToStorage();
             updateHistogram(); // Update histogram after data input
         });
         newCell.appendChild(input);
         row.appendChild(newCell);
     });
 
-    saveTableToStorage(); // Save after adding a column
-    console.log("New column added");
+    saveTableToStorage();
 }
 
 // Function to save the table data to local storage
@@ -79,7 +76,6 @@ function saveTableToStorage() {
 
     // Store table data in local storage
     localStorage.setItem('lightData', JSON.stringify(tableData));
-    console.log("Table data saved to local storage");
 }
 
 // Function to load the table data from local storage
@@ -123,7 +119,6 @@ function loadTableFromStorage() {
             });
         });
 
-        console.log("Table data loaded from local storage");
         updateHistogram(); // Update histogram after loading data
     }
 }
@@ -151,7 +146,6 @@ function downloadCSV() {
         csvContent += rowData.join(",") + "\n";
     });
 
-    // Create a download link and trigger the download
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -162,13 +156,161 @@ function downloadCSV() {
     document.body.removeChild(link);
 }
 
-// Function to plot histogram of all intensity values
+// Function to generate the histogram with colors based on wavelength
 function updateHistogram() {
     const table = document.getElementById('dataTable');
     const allIntensities = [];
+    const colors = [
+        'rgba(0, 0, 255, 0.6)',  // Blue (415 nm)
+        'rgba(0, 128, 255, 0.6)',  // Light Blue (445 nm)
+        'rgba(0, 255, 255, 0.6)',  // Cyan (480 nm)
+        'rgba(0, 255, 128, 0.6)',  // Green (515 nm)
+        'rgba(255, 255, 0, 0.6)',  // Yellow (555 nm)
+        'rgba(255, 165, 0, 0.6)',  // Orange (590 nm)
+        'rgba(255, 69, 0, 0.6)',   // Red-Orange (630 nm)
+        'rgba(255, 0, 0, 0.6)'     // Red (680 nm)
+    ];
 
     // Collect all intensities from the table
     const rows = table.querySelectorAll('tbody tr');
     rows.forEach(row => {
         row.querySelectorAll('td input').forEach(input => {
-            if (input
+            if (input.value) {
+                allIntensities.push(Number(input.value));
+            }
+        });
+    });
+
+    const ctx = document.getElementById('histogramChart').getContext('2d');
+    if (window.histogramChart) {
+        window.histogramChart.destroy();
+    }
+
+    window.histogramChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: wavelengths,
+            datasets: [{
+                label: 'Intensity Distribution by Wavelength',
+                data: allIntensities,
+                backgroundColor: colors,
+                borderColor: colors.map(c => c.replace('0.6', '1')),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Wavelength (nm)',
+                        font: {
+                            size: 18
+                        }
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Intensity',
+                        font: {
+                            size: 18
+                        }
+                    },
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        font: {
+                            size: 16
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Function to generate the graph when the button is clicked
+function generateGraph() {
+    const select = document.getElementById('dataColumnSelect');
+    const colIndex = select.value;
+
+    if (colIndex === "") {
+        alert("Please select a column to generate the graph.");
+        return;
+    }
+
+    const table = document.getElementById('dataTable');
+    const intensityValues = [];
+    const rows = table.querySelectorAll('tbody tr');
+
+    // Check if all intensities are entered for the selected column
+    let missingData = false;
+    rows.forEach(row => {
+        const input = row.querySelectorAll('td input')[colIndex - 1];
+        if (input && input.value) {
+            intensityValues.push(Number(input.value));
+        } else {
+            missingData = true;
+        }
+    });
+
+    if (missingData) {
+        alert("Please enter all intensity values for the selected column before generating the graph.");
+        return;
+    }
+
+    const ctx = document.getElementById('lightChart').getContext('2d');
+    if (window.lineChart) {
+        window.lineChart.destroy();
+    }
+
+    window.lineChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: wavelengths,
+            datasets: [{
+                label: 'Intensity vs Wavelength',
+                data: intensityValues,
+                backgroundColor: colors,
+                borderColor: colors.map(c => c.replace('0.6', '1')),
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Wavelength (nm)',
+                        font: {
+                            size: 18
+                        }
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Intensity',
+                        font: {
+                            size: 18
+                        }
+                    },
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        font: {
+                            size: 16
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
