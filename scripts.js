@@ -22,9 +22,18 @@ function addColumn() {
 
     // Add the new column header
     const newHeader = document.createElement('th');
-    const colIndex = headerRow.children.length; // Track column index
+    const colIndex = headerRow.children.length;
     newHeader.textContent = `${location} - ${date} - ${time}`;
-    
+
+    // Add a delete button to the header
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.classList.add('delete-column');
+    deleteButton.onclick = function () {
+        deleteColumn(colIndex); // Delete the column
+    };
+    newHeader.appendChild(deleteButton);
+
     // Add click event listener to the new header to generate graph for this column
     newHeader.addEventListener('click', function () {
         generateGraphFromColumn(colIndex);
@@ -88,6 +97,16 @@ function loadTableFromStorage() {
         headers.slice(1).forEach((header, colIndex) => {
             const newHeader = document.createElement('th');
             newHeader.textContent = header;
+
+            // Add delete button for loaded columns
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('delete-column');
+            deleteButton.onclick = function () {
+                deleteColumn(colIndex + 1); // Adjusted colIndex for loaded columns
+            };
+            newHeader.appendChild(deleteButton);
+
             // Add click event listener for each loaded column header
             newHeader.addEventListener('click', function () {
                 generateGraphFromColumn(colIndex + 1);
@@ -109,6 +128,38 @@ function loadTableFromStorage() {
             });
         });
     }
+}
+
+// Function to delete a column
+function deleteColumn(colIndex) {
+    const confirmation = confirm("Are you sure you want to delete this column? All data in this column will be lost.");
+    if (!confirmation) return;
+
+    const table = document.getElementById('dataTable');
+    const headerRow = table.querySelector('thead tr');
+    
+    // Remove the header for the column
+    headerRow.deleteCell(colIndex);
+
+    // Remove the data cells for the column
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        row.deleteCell(colIndex);
+    });
+
+    saveTableToStorage(); // Save the updated table after deleting the column
+}
+
+// Function to reset all data in the table
+function resetAllData() {
+    const confirmation = confirm("Are you sure you want to reset all data? This action cannot be undone.");
+    if (!confirmation) return;
+
+    // Clear local storage
+    localStorage.removeItem('lightData');
+
+    // Reload the page to reset the table
+    location.reload();
 }
 
 // Function to generate the graph for the selected column
