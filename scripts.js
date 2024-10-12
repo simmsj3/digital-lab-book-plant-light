@@ -233,11 +233,11 @@ function updateHistogram() {
     });
 }
 
-// Function to generate the graph when the button is clicked
 function generateGraph() {
     const select = document.getElementById('dataColumnSelect');
     const colIndex = select.value;
 
+    // Ensure a column is selected
     if (colIndex === "") {
         alert("Please select a column to generate the graph.");
         return;
@@ -247,10 +247,10 @@ function generateGraph() {
     const intensityValues = [];
     const rows = table.querySelectorAll('tbody tr');
 
-    // Check if all intensities are entered for the selected column
+    // Validate data: Check if all intensities are entered for the selected column
     let missingData = false;
     rows.forEach(row => {
-        const input = row.querySelectorAll('td input')[colIndex - 1];
+        const input = row.querySelectorAll('td input')[colIndex - 1];  // Get the input for the selected column
         if (input && input.value) {
             intensityValues.push(Number(input.value));
         } else {
@@ -258,16 +258,33 @@ function generateGraph() {
         }
     });
 
+    // If any data is missing, prompt the user to fill it in
     if (missingData) {
         alert("Please enter all intensity values for the selected column before generating the graph.");
         return;
     }
 
+    // Bar colors corresponding to wavelength
+    const colors = [
+        'rgba(0, 0, 255, 0.6)',  // Blue (415 nm)
+        'rgba(0, 128, 255, 0.6)',  // Light Blue (445 nm)
+        'rgba(0, 255, 255, 0.6)',  // Cyan (480 nm)
+        'rgba(0, 255, 128, 0.6)',  // Green (515 nm)
+        'rgba(255, 255, 0, 0.6)',  // Yellow (555 nm)
+        'rgba(255, 165, 0, 0.6)',  // Orange (590 nm)
+        'rgba(255, 69, 0, 0.6)',   // Red-Orange (630 nm)
+        'rgba(255, 0, 0, 0.6)'     // Red (680 nm)
+    ];
+
+    // Get the context for the chart
     const ctx = document.getElementById('lightChart').getContext('2d');
+
+    // Destroy any existing chart to avoid overlap
     if (window.lineChart) {
         window.lineChart.destroy();
     }
 
+    // Generate the histogram using Chart.js
     window.lineChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -276,7 +293,7 @@ function generateGraph() {
                 label: 'Intensity vs Wavelength',
                 data: intensityValues,
                 backgroundColor: colors,
-                borderColor: colors.map(c => c.replace('0.6', '1')),
+                borderColor: colors.map(c => c.replace('0.6', '1')), // Full opacity for borders
                 borderWidth: 2
             }]
         },
@@ -314,3 +331,13 @@ function generateGraph() {
         }
     });
 }
+
+
+
+
+
+
+
+
+
+
