@@ -90,6 +90,23 @@ canvas {
     height: auto;           /* Maintain aspect ratio */
 }
 
+/* Styling for Delete Column buttons */
+.delete-column {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.delete-column:hover {
+    background-color: #ff3333;
+}
+
+
 /* Media queries for responsiveness */
 @media (max-width: 768px) {
     h1 {
