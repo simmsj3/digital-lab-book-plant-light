@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Book: Light Levels</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Digital Lab Book - Light Level Recording</h1>
+    </header>
+    
+    <!-- Section to input data -->
+    <section id="data-entry">
+        <h2>Enter Light Level Data</h2>
+        <form id="dataForm">
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" required><br>
+
+            <label for="time">Time:</label>
+            <input type="time" id="time" name="time" required><br>
+
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" required><br>
+
+            <label for="wavelengths">Wavelengths (comma-separated):</label>
+            <input type="text" id="wavelengths" name="wavelengths" placeholder="e.g., 450, 550, 650" required><br>
+
+            <button type="button" onclick="recordData()">Submit Data</button>
+        </form>
+    </section>
+
+    <!-- Section to display the graph -->
+    <section id="graph">
+        <h2>Light Levels Graph</h2>
+        <canvas id="lightChart"></canvas>
+    </section>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
