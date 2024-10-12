@@ -11,6 +11,7 @@ function addColumn() {
 
     const table = document.getElementById('dataTable');
     const headerRow = table.querySelector('thead tr');
+    const select = document.getElementById('dataColumnSelect');
 
     // Prompt for column header information
     const location = prompt('Enter the location:');
@@ -24,9 +25,15 @@ function addColumn() {
 
     // Add the new column header
     const newHeader = document.createElement('th');
+    const colIndex = headerRow.children.length; // Track column index
     newHeader.textContent = `${location} - ${date} - ${time}`;
-    newHeader.addEventListener('click', () => plotColumnData(headerRow.children.length - 1)); // Add click event
     headerRow.appendChild(newHeader);
+
+    // Add this new column to the dropdown for selection
+    const newOption = document.createElement('option');
+    newOption.value = colIndex;
+    newOption.textContent = `${location} - ${date} - ${time}`;
+    select.appendChild(newOption);
 
     // Add empty input cells for each wavelength row
     const rows = table.querySelectorAll('tbody tr');
@@ -78,6 +85,7 @@ function saveTableToStorage() {
 // Function to load the table data from local storage
 function loadTableFromStorage() {
     const storedData = localStorage.getItem('lightData');
+    const select = document.getElementById('dataColumnSelect');
     if (storedData) {
         const tableData = JSON.parse(storedData);
 
@@ -89,8 +97,13 @@ function loadTableFromStorage() {
         headers.slice(1).forEach((header, colIndex) => {
             const newHeader = document.createElement('th');
             newHeader.textContent = header;
-            newHeader.addEventListener('click', () => plotColumnData(colIndex + 1)); // Add click event
             headerRow.appendChild(newHeader);
+
+            // Add each header to the dropdown
+            const newOption = document.createElement('option');
+            newOption.value = colIndex + 1;
+            newOption.textContent = header;
+            select.appendChild(newOption);
         });
 
         // Load table data
@@ -158,98 +171,4 @@ function updateHistogram() {
     const rows = table.querySelectorAll('tbody tr');
     rows.forEach(row => {
         row.querySelectorAll('td input').forEach(input => {
-            if (input.value) {
-                allIntensities.push(Number(input.value));
-            }
-        });
-    });
-
-    // Plot histogram using Chart.js
-    const ctx = document.getElementById('histogramChart').getContext('2d');
-    if (window.histogramChart) {
-        window.histogramChart.destroy();
-    }
-
-    window.histogramChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: wavelengths,
-            datasets: [{
-                label: 'Intensity Distribution',
-                data: allIntensities,
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Wavelength (nm)'
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Intensity'
-                    },
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-}
-
-// Function to plot line chart for a specific column of data
-function plotColumnData(colIndex) {
-    const table = document.getElementById('dataTable');
-    const intensityValues = [];
-
-    // Collect intensity data for the clicked column
-    const rows = table.querySelectorAll('tbody tr');
-    rows.forEach(row => {
-        const input = row.querySelectorAll('td input')[colIndex - 1];
-        if (input && input.value) {
-            intensityValues.push(Number(input.value));
-        }
-    });
-
-    // Plot line graph using Chart.js
-    const ctx = document.getElementById('lightChart').getContext('2d');
-    if (window.lineChart) {
-        window.lineChart.destroy();
-    }
-
-    window.lineChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: wavelengths,
-            datasets: [{
-                label: 'Intensity vs Wavelength',
-                data: intensityValues,
-                borderColor: 'rgba(75, 192, 192, 1)',
-                fill: false,
-                borderWidth: 2
-            }]
-        },
-        options: {
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Wavelength (nm)'
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Intensity'
-                    },
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-}
+            if (input
