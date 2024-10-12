@@ -156,7 +156,7 @@ function downloadCSV() {
     document.body.removeChild(link);
 }
 
-// Function to generate the histogram with colors based on wavelength
+
 function updateHistogram() {
     const table = document.getElementById('dataTable');
     const allIntensities = [];
@@ -182,7 +182,9 @@ function updateHistogram() {
     });
 
     const ctx = document.getElementById('histogramChart').getContext('2d');
-    if (window.histogramChart) {
+
+    // Only destroy the chart if it has been initialized
+    if (window.histogramChart instanceof Chart) {
         window.histogramChart.destroy();
     }
 
@@ -232,6 +234,21 @@ function updateHistogram() {
         }
     });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function generateGraph() {
     const select = document.getElementById('dataColumnSelect');
