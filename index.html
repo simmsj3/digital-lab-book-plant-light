@@ -12,24 +12,29 @@
         <h1>Digital Lab Book - Light Level Recording</h1>
     </header>
     
-    <!-- Section to input data -->
+    <!-- Section to display the data table -->
     <section id="data-entry">
-        <h2>Enter Light Level Data</h2>
-        <form id="dataForm">
-            <label for="date">Date:</label>
-            <input type="date" id="date" name="date" required><br>
+        <h2>Light Level Data Table</h2>
+        <button type="button" onclick="addColumn()">Add Data Column</button>
+        <button type="button" onclick="downloadCSV()">Download CSV</button>
 
-            <label for="time">Time:</label>
-            <input type="time" id="time" name="time" required><br>
-
-            <label for="location">Location:</label>
-            <input type="text" id="location" name="location" required><br>
-
-            <label for="wavelengths">Wavelengths (comma-separated):</label>
-            <input type="text" id="wavelengths" name="wavelengths" placeholder="e.g., 450, 550, 650" required><br>
-
-            <button type="button" onclick="recordData()">Submit Data</button>
-        </form>
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>Wavelength (nm)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>415</td></tr>
+                <tr><td>445</td></tr>
+                <tr><td>480</td></tr>
+                <tr><td>515</td></tr>
+                <tr><td>555</td></tr>
+                <tr><td>590</td></tr>
+                <tr><td>630</td></tr>
+                <tr><td>680</td></tr>
+            </tbody>
+        </table>
     </section>
 
     <!-- Section to display the graph -->
