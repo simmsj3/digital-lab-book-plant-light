@@ -1,22 +1,30 @@
+/* General body styling */
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
     background-color: #f4f4f9;
-}
-
-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-h1 {
     color: #333;
 }
 
-section {
-    margin: 20px 0;
+/* Header styling */
+header {
+    text-align: center;
+    margin-bottom: 30px;
 }
 
+h1 {
+    font-size: 36px;
+    color: #333;
+}
+
+/* Section titles */
+h2 {
+    font-size: 24px;
+    margin-top: 30px;
+    color: #333;
+}
+
+/* Table styling */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -24,25 +32,93 @@ table {
 }
 
 th, td {
-    padding: 10px;
+    padding: 15px;
     text-align: center;
     border: 1px solid #ccc;
 }
 
-input {
-    width: 100px;
+th {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 18px;
 }
 
+td input {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Button styling */
 button {
-    margin: 10px;
-    padding: 10px;
-    background-color: #28a745;
+    margin: 15px 10px;
+    padding: 12px 20px;
+    background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 16px;
 }
 
 button:hover {
-    background-color: #218838;
+    background-color: #45a049;
+}
+
+/* Dropdown styling */
+select {
+    padding: 10px;
+    font-size: 16px;
+    margin-right: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* Section container */
+section {
+    margin-bottom: 30px;
+}
+
+/* Canvas styling for charts */
+canvas {
+    display: block;
+    margin: 20px auto;
+    max-width: 800px;
+    max-height: 400px;
+}
+
+/* Histogram and graph titles */
+#histogramChart, #lightChart {
+    margin-top: 30px;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 28px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    th, td {
+        padding: 10px;
+    }
+
+    button {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+
+    td input {
+        font-size: 14px;
+    }
+
+    select {
+        font-size: 14px;
+        padding: 8px;
+    }
 }
