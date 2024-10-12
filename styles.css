@@ -81,17 +81,13 @@ section {
     margin-bottom: 30px;
 }
 
-/* Canvas styling for charts */
+/* Canvas styling for charts with dynamic sizing */
 canvas {
     display: block;
     margin: 20px auto;
-    max-width: 800px;
-    max-height: 400px;
-}
-
-/* Histogram and graph titles */
-#histogramChart, #lightChart {
-    margin-top: 30px;
+    width: 100%;           /* Responsive width */
+    max-width: 900px;       /* Limit to a maximum width */
+    height: auto;           /* Maintain aspect ratio */
 }
 
 /* Media queries for responsiveness */
