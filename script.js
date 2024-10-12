@@ -2,6 +2,8 @@ let wavelengths = [415, 445, 480, 515, 555, 590, 630, 680];
 
 // Function to add a new column for student input
 function addColumn() {
+    console.log("Add Data Column button clicked");  // Debugging statement
+
     const table = document.getElementById('dataTable');
     const headerRow = table.querySelector('thead tr');
 
@@ -30,6 +32,8 @@ function addColumn() {
         newCell.appendChild(input);
         row.appendChild(newCell);
     });
+
+    console.log("New column added");  // Debugging statement
 }
 
 // Function to download the table as a CSV file
