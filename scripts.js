@@ -162,6 +162,44 @@ function resetAllData() {
     location.reload();
 }
 
+// Function to download the table data as a CSV file
+function downloadCSV() {
+    const table = document.getElementById('dataTable');
+    let csvContent = "data:text/csv;charset=utf-8,";
+
+    // Collect headers
+    const headers = [];
+    table.querySelectorAll('thead th').forEach(header => {
+        // Remove any text from the delete button inside headers
+        const cleanHeader = header.textContent.replace("Delete", "").trim();
+        headers.push(cleanHeader);
+    });
+    csvContent += headers.join(",") + "\n";  // Add headers to CSV
+
+    // Collect data rows
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const rowData = [];
+        row.querySelectorAll('td').forEach(cell => {
+            const input = cell.querySelector('input');
+            rowData.push(input ? input.value : cell.textContent);  // Get input values or cell text
+        });
+        csvContent += rowData.join(",") + "\n";  // Add row data to CSV
+    });
+
+    // Create a download link and trigger the download
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "light_data.csv");
+    document.body.appendChild(link);
+
+    link.click();  // Trigger the download
+    document.body.removeChild(link);  // Clean up the link
+}
+
+
+
 // Function to generate the graph for the selected column
 function generateGraphFromColumn(colIndex) {
     const table = document.getElementById('dataTable');
